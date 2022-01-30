@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+
+  db:
+    image: postgres:14.1-alpine
+    container_name: keycloak_postgres
+    restart: always
+    tty: true
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./.docker/dbdata:/var/lib/postgres
+    environment:
+      - POSTGRES_DB=keycloak
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+
+  app:
+    build: .
+    container_name: keycloak
+    environment:
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=admin
+      - DB_ADDR=db
+      - DB_VENDOR=postgres
+      - DB_DATABASE=keycloak
+      - DB_PORT=5432
+      - DB_USER=admin
+      - DB_PASSWORD=admin
+    #volumes: Path para obter os dados de tema
+    #  - ./mythemes:/opt/jboss/keycloak/themes/mythemes
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+
+  
